@@ -20,3 +20,33 @@ dependencies {
 tasks.withType<Test>{
     useJUnitPlatform()
 }
+
+
+tasks.register<Test>("Simple Custom Task") {
+    val tag = "IntegrationTest"
+    description = "runs all tests with the tag $tag"
+    group = "custom tests"
+
+    useJUnitPlatform {
+        includeTags(tag)
+    }
+}
+
+tasks.register<IntegrationTest>("Custom Type Task")
+
+open class IntegrationTest : Test() {
+    init {
+        val nameSuffix = "IntegrationTest"
+        description = "runs all tests ending with $nameSuffix"
+        group = "custom tests"
+
+        filter.includeTestsMatching("*$nameSuffix")
+    }
+
+    @TaskAction
+    fun run(){
+        println("unnecessary task action: " +
+                "tests run because of another TaskAction defined in Test()"
+        )
+    }
+}
